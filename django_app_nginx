@@ -1,0 +1,33 @@
+# Replace <...> for your variables
+
+upstream <app-name> {
+    server 127.0.0.1:<available-port>;
+}
+
+server {
+
+    listen 80;
+    server_name <ip-or-url-allowed-host>;
+
+    access_log /var/log/nginx/<app-name>.log;
+    error_log /var/log/nginx/<app-name>.error.log;
+
+    location /static {
+        autoindex on;
+        alias <static/folder/path> # /webapps/base_django/django-adminlte-base/mainapp/static;
+    }
+
+    location /media {
+        autoindex on;
+        alias <media/folder/path> # /webapps/base_django/django-adminlte-base/mainapp/media;
+    }
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+
+        proxy_pass http://<app-name>;
+    }
+
+}

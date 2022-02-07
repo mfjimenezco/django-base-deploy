@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Replace <...> for your variables
+
+NAME="<app-name>"
+HOMEAPP="<app/home/path>" # Ex: /webapps/base_django/
+VIRTUALENV="<virtualenv/python/path>" # Ex: /webapps/base_django/.venv
+DJANGODIR="<main/app/django/path>" # Ex: /webapps/base_django/django-adminlte-base/mainapp/
+USER=<user-name>
+GROUP=<group-account>
+NUM_WORKERS=3
+DJANGO_WSGI_MODULE=<main-app>.wsgi # Ex: mainapp.wsgi
+
+echo "Starting $NAME as `whoami`"
+
+# 
+cd $VIRTUALENV
+source bin/activate
+
+# 
+cd $HOMEAPP
+source ./.bashrc
+
+# 
+cd $DJANGODIR
+
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+
+exec gunicorn ${DJANGO_WSGI_MODULE} \
+        --workers $NUM_WORKERS \
+        --user=$USER --group=$GROUP \
+        --log-level=debug \
+        --bind=127.0.0.1:<available-port>
